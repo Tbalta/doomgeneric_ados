@@ -380,10 +380,10 @@ static int	st_facecount = 0;
 static int	st_faceindex = 0;
 
 // holds key-type for each key box on bar
-static int	keyboxes[3]; 
+static int	keyboxes[3] = { 0 };
 
 // a random number per tick
-static int	st_randomnumber;  
+static int	st_randomnumber = 0;  
 
 cheatseq_t cheat_mus = CHEAT("idmus", 2);
 cheatseq_t cheat_god = CHEAT("iddqd", 0);
@@ -959,7 +959,7 @@ void ST_doPaletteStuff(void)
 	if (palette >= NUMREDPALS)
 	    palette = NUMREDPALS-1;
 
-	palette += STARTREDPALS;
+	    palette += STARTREDPALS;
     }
 
     else if (plyr->bonuscount)
@@ -1172,7 +1172,9 @@ void ST_loadGraphics(void)
 void ST_loadData(void)
 {
     lu_palette = W_GetNumForName (DEH_String("PLAYPAL"));
+    printf("Tanguy2");
     ST_loadGraphics();
+    printf("Tanguy3");
 }
 
 static void ST_unloadCallback(char *lumpname, patch_t **variable)

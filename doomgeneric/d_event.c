@@ -24,9 +24,9 @@
 
 #define MAXEVENTS 64
 
-static event_t events[MAXEVENTS];
-static int eventhead;
-static int eventtail;
+static event_t events[MAXEVENTS] = {0};
+static int eventhead = 0;
+static int eventtail = 0;
 
 //
 // D_PostEvent
@@ -42,7 +42,7 @@ void D_PostEvent (event_t* ev)
 
 event_t *D_PopEvent(void)
 {
-    event_t *result;
+    event_t *result = NULL;
 
     // No more events waiting.
 

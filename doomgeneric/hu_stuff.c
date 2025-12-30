@@ -84,21 +84,21 @@ char*	player_names[] =
 };
 
 char			chat_char; // remove later.
-static player_t*	plr;
+static player_t*	plr = NULL;
 patch_t*		hu_font[HU_FONTSIZE];
 static hu_textline_t	w_title;
-boolean			chat_on;
+boolean			chat_on = false;
 static hu_itext_t	w_chat;
 static boolean		always_off = false;
 static char		chat_dest[MAXPLAYERS];
 static hu_itext_t w_inputbuffer[MAXPLAYERS];
 
-static boolean		message_on;
-boolean			message_dontfuckwithme;
-static boolean		message_nottobefuckedwith;
+static boolean		message_on = false;
+boolean			message_dontfuckwithme = false;
+static boolean		message_nottobefuckedwith = false;
 
 static hu_stext_t	w_message;
-static int		message_counter;
+static int		message_counter = 0;
 
 extern int		showMessages;
 
@@ -294,8 +294,10 @@ void HU_Init(void)
     j = HU_FONTSTART;
     for (i=0;i<HU_FONTSIZE;i++)
     {
-	DEH_snprintf(buffer, 9, "STCFN%.3d", j++);
-	hu_font[i] = (patch_t *) W_CacheLumpName(buffer, PU_STATIC);
+	    // DEH_snprintf(buffer, 9, "STCFN%.3d", j++);
+	    DEH_snprintf(buffer, 9, "STCFN%d%d%d", j / 100, (j % 100) / 10, j % 10);
+        j++;
+	    hu_font[i] = (patch_t *) W_CacheLumpName(buffer, PU_STATIC);
     }
 
 }

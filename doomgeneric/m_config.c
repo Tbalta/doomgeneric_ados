@@ -1566,6 +1566,8 @@ static default_t *SearchCollection(default_collection_t *collection, char *name)
 
     for (i=0; i<collection->numdefaults; ++i) 
     {
+        // printf("searching i: %d, collection addr: %d\n", i, &collection->defaults);
+        // printf ("Searching %s against %s\n", name, collection->defaults[i].name);
         if (!strcmp(name, collection->defaults[i].name))
         {
             return &collection->defaults[i];

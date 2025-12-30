@@ -862,6 +862,7 @@ void R_SetupFrame (player_t* player)
 //
 void R_RenderPlayerView (player_t* player)
 {	
+    // printf("R_RenderPlayerView\n");
     R_SetupFrame (player);
 
     // Clear buffers.

@@ -91,10 +91,10 @@ void	G_DoSaveGame (void);
  
 // Gamestate the last time G_Ticker was called.
 
-gamestate_t     oldgamestate; 
+gamestate_t     oldgamestate = GS_LEVEL; 
  
-gameaction_t    gameaction; 
-gamestate_t     gamestate; 
+gameaction_t    gameaction = ga_nothing; 
+gamestate_t     gamestate = GS_LEVEL; 
 skill_t         gameskill; 
 boolean		respawnmonsters;
 int             gameepisode; 
@@ -104,18 +104,18 @@ int             gamemap;
 
 int             timelimit;
 
-boolean         paused; 
-boolean         sendpause;             	// send a pause event next tic 
-boolean         sendsave;             	// send a save event next tic 
-boolean         usergame;               // ok to save / end game 
+boolean         paused = false; 
+boolean         sendpause = false;             	// send a pause event next tic 
+boolean         sendsave = false;             	// send a save event next tic 
+boolean         usergame = false;               // ok to save / end game 
  
-boolean         timingdemo;             // if true, exit with report on completion 
-boolean         nodrawers;              // for comparative timing purposes 
+boolean         timingdemo = false;             // if true, exit with report on completion 
+boolean         nodrawers  = false;              // for comparative timing purposes 
 int             starttime;          	// for comparative timing purposes  	 
  
 boolean         viewactive; 
  
-int             deathmatch;           	// only if started as net death 
+int             deathmatch = 0;           	// only if started as net death 
 boolean         netgame;                // only true if packets are broadcast 
 boolean         playeringame[MAXPLAYERS]; 
 player_t        players[MAXPLAYERS]; 
@@ -127,16 +127,16 @@ int             displayplayer;          // view being displayed
 int             levelstarttic;          // gametic at level start 
 int             totalkills, totalitems, totalsecret;    // for intermission 
  
-char           *demoname;
-boolean         demorecording; 
-boolean         longtics;               // cph's doom 1.91 longtics hack
-boolean         lowres_turn;            // low resolution turning for longtics
-boolean         demoplayback; 
-boolean		netdemo; 
-byte*		demobuffer;
-byte*		demo_p;
-byte*		demoend; 
-boolean         singledemo;            	// quit after playing a demo from cmdline 
+char           *demoname = NULL;
+boolean         demorecording = false; 
+boolean         longtics = false;              // cph's doom 1.91 longtics hack
+boolean         lowres_turn = false;            // low resolution turning for longtics
+boolean         demoplayback = false; 
+boolean		netdemo    = false; 
+byte*		demobuffer = NULL;
+byte*		demo_p     = NULL;
+byte*		demoend    = NULL;
+boolean         singledemo = false;            	// quit after playing a demo from cmdline 
  
 boolean         precache = true;        // if true, load all graphics at start 
 
@@ -196,7 +196,7 @@ static const struct
 #define MAX_JOY_BUTTONS 20
 
 static boolean  gamekeydown[NUMKEYS]; 
-static int      turnheld;		// for accelerative turning 
+static int      turnheld = 0;		// for accelerative turning 
  
 static boolean  mousearray[MAX_MOUSE_BUTTONS + 1];
 static boolean *mousebuttons = &mousearray[1];  // allow [-1]
@@ -205,22 +205,22 @@ static boolean *mousebuttons = &mousearray[1];  // allow [-1]
 int             mousex;
 int             mousey;         
 
-static int      dclicktime;
-static boolean  dclickstate;
-static int      dclicks; 
-static int      dclicktime2;
-static boolean  dclickstate2;
-static int      dclicks2;
+static int      dclicktime = 0;
+static boolean  dclickstate = false;
+static int      dclicks = 0; 
+static int      dclicktime2 = 0;
+static boolean  dclickstate2 = false;
+static int      dclicks2 = 0;
 
 // joystick values are repeated 
-static int      joyxmove;
-static int      joyymove;
-static int      joystrafemove;
+static int      joyxmove = 0;
+static int      joyymove = 0;
+static int      joystrafemove = 0;
 static boolean  joyarray[MAX_JOY_BUTTONS + 1]; 
 static boolean *joybuttons = &joyarray[1];		// allow [-1] 
  
-static int      savegameslot; 
-static char     savedescription[32]; 
+static int      savegameslot = 0; 
+static char     savedescription[32] = { 0 }; 
  
 #define	BODYQUESIZE	32
 
@@ -603,7 +603,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 void G_DoLoadLevel (void) 
 { 
     int             i; 
-
+    puts ("G_DoLoadLevel");
     // Set the sky map.
     // First thing, we have a dummy sky texture name,
     //  a flat. The data is in the WAD only because
@@ -853,6 +853,7 @@ boolean G_Responder (event_t* ev)
 //
 void G_Ticker (void) 
 { 
+    // puts("G_Ticker");
     int		i;
     int		buf; 
     ticcmd_t*	cmd;
@@ -1732,10 +1733,12 @@ G_InitNew
     char *skytexturename;
     int             i;
 
+    puts ("G_InitNew");
+
     if (paused)
     {
 	paused = false;
-	S_ResumeSound ();
+    S_ResumeSound ();
     }
 
     /*
@@ -1896,7 +1899,8 @@ G_InitNew
 
 
 void G_ReadDemoTiccmd (ticcmd_t* cmd) 
-{ 
+{
+    // printf ("demo: %d", demo_p);
     if (*demo_p == DEMOMARKER) 
     {
 	// end of demo data stream 
@@ -1939,14 +1943,15 @@ static void IncreaseDemoBuffer(void)
     
     new_demobuffer = Z_Malloc(new_length, PU_STATIC, 0);
     new_demop = new_demobuffer + (demo_p - demobuffer);
-
+    
     // Copy over the old data
-
+    
     memcpy(new_demobuffer, demobuffer, current_length);
-
+    
     // Free the old buffer and point the demo pointers at the new buffer.
-
+    
     Z_Free(demobuffer);
+    printf("Tanguy - Demo buffer at: %d", demo_p);
 
     demobuffer = new_demobuffer;
     demo_p = new_demop;
@@ -2071,6 +2076,7 @@ void G_BeginRecording (void)
 
     lowres_turn = !longtics;
     
+    printf ("demobuffer at: %d\n", demobuffer);
     demo_p = demobuffer;
 	
     // Save the right version code for this demo
@@ -2157,7 +2163,7 @@ void G_DoPlayDemo (void)
 	 
     gameaction = ga_nothing; 
     demobuffer = demo_p = W_CacheLumpName (defdemoname, PU_STATIC); 
-
+    printf ("demobuffer %d, demo_p %d\n", demobuffer, demo_p);
     demoversion = *demo_p++;
 
     if (demoversion == G_VanillaVersionCode())
@@ -2248,6 +2254,7 @@ void G_TimeDemo (char* name)
 boolean G_CheckDemoStatus (void) 
 { 
     int             endtime; 
+    puts("G_CheckDemoStatus");
 	 
     if (timingdemo) 
     { 

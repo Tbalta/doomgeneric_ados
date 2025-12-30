@@ -126,41 +126,41 @@ struct texture_s
 
 
 
-int		firstflat;
-int		lastflat;
-int		numflats;
+int		firstflat = 0;
+int		lastflat = 0;
+int		numflats = 0;
 
-int		firstpatch;
-int		lastpatch;
-int		numpatches;
+int		firstpatch = 0;
+int		lastpatch = 0;
+int		numpatches = 0;
 
-int		firstspritelump;
-int		lastspritelump;
-int		numspritelumps;
+int		firstspritelump = 0;
+int		lastspritelump = 0;
+int		numspritelumps = 0;
 
-int		numtextures;
-texture_t**	textures;
-texture_t**     textures_hashtable;
+int		numtextures = 0;
+texture_t**	textures = NULL;
+texture_t**     textures_hashtable = NULL;
 
 
-int*			texturewidthmask;
+int*			texturewidthmask = 0;
 // needed for texture pegging
-fixed_t*		textureheight;		
-int*			texturecompositesize;
-short**			texturecolumnlump;
-unsigned short**	texturecolumnofs;
-byte**			texturecomposite;
+fixed_t*		textureheight = 0;		
+int*			texturecompositesize = 0;
+short**			texturecolumnlump = 0;
+unsigned short**	texturecolumnofs = 0;
+byte**			texturecomposite = 0;
 
 // for global animation
-int*		flattranslation;
-int*		texturetranslation;
+int*		flattranslation = NULL;
+int*		texturetranslation = NULL;
 
 // needed for pre rendering
-fixed_t*	spritewidth;	
-fixed_t*	spriteoffset;
-fixed_t*	spritetopoffset;
+fixed_t*	spritewidth = NULL;	
+fixed_t*	spriteoffset = NULL;
+fixed_t*	spritetopoffset = NULL;
 
-lighttable_t	*colormaps;
+lighttable_t	*colormaps = NULL;
 
 
 //

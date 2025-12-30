@@ -103,7 +103,7 @@ boolean screensaver_mode = false;
 // Flag indicating whether the screen is currently visible:
 // when the screen isnt visible, don't render the screen
 
-boolean screenvisible;
+boolean screenvisible = false;
 
 // Mouse acceleration
 //

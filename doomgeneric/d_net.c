@@ -70,6 +70,7 @@ static void PlayerQuitGame(player_t *player)
 
 static void RunTic(ticcmd_t *cmds, boolean *ingame)
 {
+    // puts("RunTic");
     extern boolean advancedemo;
     unsigned int i;
 
@@ -240,6 +241,7 @@ void D_ConnectNetGame(void)
 void D_CheckNetGame (void)
 {
     net_gamesettings_t settings;
+    memset(&settings, 0, sizeof (net_gamesettings_t));
 
     if (netgame)
     {

@@ -611,7 +611,7 @@ void F_BunnyScroll (void)
     patch_t*	p2;
     char	name[10];
     int		stage;
-    static int	laststage;
+    static int	laststage = 0;
 		
     p1 = W_CacheLumpName (DEH_String("PFUB2"), PU_LEVEL);
     p2 = W_CacheLumpName (DEH_String("PFUB1"), PU_LEVEL);

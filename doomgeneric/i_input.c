@@ -279,6 +279,7 @@ static void UpdateShiftStatus(int pressed, unsigned char key)
 void I_GetEvent(void)
 {
     event_t event;
+    memset (&event, 0, sizeof (event_t));
     int pressed;
     unsigned char key;
 

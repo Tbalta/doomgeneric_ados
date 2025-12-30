@@ -42,7 +42,7 @@ static byte *dest_buffer;
 
 // Pitch of destination buffer, ie. screen->pitch.
 
-static int dest_pitch;
+static int dest_pitch = 0;
 
 // Lookup tables used for aspect ratio correction stretching code.
 // stretch_tables[0] : 20% / 80%

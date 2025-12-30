@@ -127,7 +127,7 @@ wipe_exitColorXForm
 }
 
 
-static int*	y;
+static int*	y = NULL;
 
 int
 wipe_initMelt

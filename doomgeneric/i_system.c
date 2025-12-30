@@ -146,6 +146,7 @@ byte *I_ZoneBase (int *size)
 
     if (p > 0)
     {
+        printf("Found -mb");
         default_ram = atoi(myargv[p+1]);
         min_ram = default_ram;
     }

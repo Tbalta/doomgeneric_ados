@@ -58,12 +58,12 @@ typedef struct
 
 // Location of each lump on disk.
 
-lumpinfo_t *lumpinfo;		
+lumpinfo_t *lumpinfo = NULL;		
 unsigned int numlumps = 0;
 
 // Hash table for fast lookups
 
-static lumpinfo_t **lumphash;
+static lumpinfo_t **lumphash = NULL;
 
 // Hash function used for lump names.
 
@@ -118,6 +118,7 @@ static void ExtendLumpInfo(int newnumlumps)
     }
 
     // All done.
+    printf ("Freeing lumpinfo");
     free(lumpinfo);
     lumpinfo = newlumpinfo;
     numlumps = newnumlumps;

@@ -61,15 +61,15 @@ static ticcmd_set_t ticdata[BACKUPTICS];
 
 // The index of the next tic to be made (with a call to BuildTiccmd).
 
-static int maketic;
+static int maketic = 0;
 
 // The number of complete tics received from the server so far.
 
-static int recvtic;
+static int recvtic = 0;
 
 // The number of tics that have been run (using RunTic) so far.
 
-int gametic;
+int gametic = 0;
 
 // When set to true, a single tic is run each time TryRunTics() is called.
 // This is used for -timedemo mode.
@@ -78,7 +78,7 @@ boolean singletics = false;
 
 // Index of the local player.
 
-static int localplayer;
+static int localplayer = 0;
 
 // Used for original sync code.
 
@@ -87,7 +87,7 @@ static int      skiptics = 0;
 // Reduce the bandwidth needed by sampling game input less and transmitting
 // less.  If ticdup is 2, sample half normal, 3 = one third normal, etc.
 
-int		ticdup;
+int		ticdup = 0;
 
 // Amount to offset the timer for game sync.
 
@@ -198,7 +198,7 @@ static boolean BuildNewTic(void)
 // Builds ticcmds for console player,
 // sends out a packet
 //
-int      lasttime;
+int      lasttime = 0;
 
 void NetUpdate (void)
 {
@@ -584,9 +584,9 @@ static int GetLowTic(void)
     return lowtic;
 }
 
-static int frameon;
+static int frameon = 0;
 static int frameskip[4];
-static int oldnettics;
+static int oldnettics = 0;
 
 static void OldNetSync(void)
 {
@@ -708,7 +708,7 @@ void TryRunTics (void)
     int	i;
     int	lowtic;
     int	entertic;
-    static int oldentertics;
+    static int oldentertics = 0;
     int realtics;
     int	availabletics;
     int	counts;
@@ -720,7 +720,7 @@ void TryRunTics (void)
 
     // in singletics mode, run a single tic every time this function
     // is called.
-
+    // printf ("singletick: %d\n", singletics);
     if (singletics)
     {
         BuildNewTic();
@@ -766,7 +766,8 @@ void TryRunTics (void)
 
     while (!PlayersInGame() || lowtic < gametic/ticdup + counts)
     {
-	NetUpdate ();
+        // puts("tic");
+	    NetUpdate ();
 
         lowtic = GetLowTic();
 
@@ -776,15 +777,16 @@ void TryRunTics (void)
         // Don't stay in this loop forever.  The menu is still running,
         // so return to update the screen
 
-	if (I_GetTime() / ticdup - entertic > 0)
-	{
-	    return;
-	}
+        if (I_GetTime() / ticdup - entertic > 0)
+        {
+            return;
+        }
 
         I_Sleep(1);
     }
 
     // run the count * ticdup dics
+    // printf("counts %d\n", counts);
     while (counts--)
     {
         ticcmd_set_t *set;
@@ -801,22 +803,22 @@ void TryRunTics (void)
             SinglePlayerClear(set);
         }
 
-	for (i=0 ; i<ticdup ; i++)
-	{
+        for (i=0 ; i<ticdup ; i++)
+        {
             if (gametic/ticdup > lowtic)
                 I_Error ("gametic>lowtic");
 
             memcpy(local_playeringame, set->ingame, sizeof(local_playeringame));
 
             loop_interface->RunTic(set->cmds, set->ingame);
-	    gametic++;
+	        gametic++;
 
-	    // modify command for duplicated tics
+	        // modify command for duplicated tics
 
             TicdupSquash(set);
-	}
+	    }
 
-	NetUpdate ();	// check for new console commands
+	    NetUpdate ();	// check for new console commands
     }
 }
 

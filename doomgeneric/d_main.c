@@ -87,17 +87,17 @@ void D_DoomLoop (void);
 
 // Location where savegames are stored
 
-char *          savegamedir;
+char *          savegamedir = NULL;
 
 // location of IWAD and WAD files
 
-char *          iwadfile;
+char *          iwadfile = NULL;
 
 
-boolean		devparm;	// started game with -devparm
-boolean         nomonsters;	// checkparm of -nomonsters
-boolean         respawnparm;	// checkparm of -respawn
-boolean         fastparm;	// checkparm of -fast
+boolean		    devparm = false;	// started game with -devparm
+boolean         nomonsters = false;	// checkparm of -nomonsters
+boolean         respawnparm = false;	// checkparm of -respawn
+boolean         fastparm = false;	// checkparm of -fast
 
 //extern int soundVolume;
 //extern  int	sfxVolume;
@@ -106,15 +106,15 @@ boolean         fastparm;	// checkparm of -fast
 extern  boolean	inhelpscreens;
 
 skill_t		startskill;
-int             startepisode;
-int		startmap;
-boolean		autostart;
-int             startloadgame;
+int             startepisode ;
+int		startmap = 0;
+boolean		autostart = false;
+int             startloadgame = 0;
 
-boolean		advancedemo;
+boolean		advancedemo = false;
 
 // Store demo, do not accept any inputs
-boolean         storedemo;
+boolean         storedemo = false;
 
 // "BFG Edition" version of doom2.wad does not include TITLEPIC.
 boolean         bfgedition;
@@ -138,7 +138,7 @@ void D_CheckNetGame(void);
 //
 void D_ProcessEvents (void)
 {
-    event_t*	ev;
+    event_t*	ev = NULL;
 	
     // IF STORE DEMO, DO NOT ACCEPT INPUT
     if (storedemo)
@@ -195,6 +195,7 @@ void D_Display (void)
 		borderdrawcount = 3;
     }
 
+    // printf ("Tanguy gamestate - %d - tick %d - automapactive %d\n", gamestate, gametic, automapactive);
     // save the current screen if about to wipe
     if (gamestate != wipegamestate)
 		{
@@ -337,16 +338,22 @@ void D_BindVariables(void)
     int i;
 
     M_ApplyPlatformDefaults();
-
+    DEH_printf("tanguy3.\n");
+    
     I_BindVideoVariables();
+    DEH_printf("tanguy7.\n");
     I_BindJoystickVariables();
+    DEH_printf("tanguy8.\n");
     I_BindSoundVariables();
-
+    
+    DEH_printf("tanguy4.\n");
     M_BindBaseControls();
     M_BindWeaponControls();
     M_BindMapControls();
     M_BindMenuControls();
+    DEH_printf("tanguy5.\n");
     M_BindChatControls(MAXPLAYERS);
+    DEH_printf("tanguy6.\n");
 
     key_multi_msgplayer[0] = HUSTR_KEYGREEN;
     key_multi_msgplayer[1] = HUSTR_KEYINDIGO;
@@ -356,7 +363,7 @@ void D_BindVariables(void)
 #ifdef FEATURE_MULTIPLAYER
     NET_BindVariables();
 #endif
-
+    DEH_printf("tanguy.\n");
     M_BindVariable("mouse_sensitivity",      &mouseSensitivity);
     M_BindVariable("sfx_volume",             &sfxVolume);
     M_BindVariable("music_volume",           &musicVolume);
@@ -377,6 +384,8 @@ void D_BindVariables(void)
         M_snprintf(buf, sizeof(buf), "chatmacro%i", i);
         M_BindVariable(buf, &chat_macros[i]);
     }
+    DEH_printf("tanguy2.\n");
+
 }
 
 //
@@ -436,9 +445,8 @@ void D_DoomLoop (void)
     	G_BeginRecording ();
 
     main_loop_started = true;
-
     TryRunTics();
-
+    
     I_SetWindowTitle(gamedescription);
     I_GraphicsCheckCommandLine();
     I_SetGrabMouseCallback(D_GrabMouseCallback);
@@ -447,7 +455,8 @@ void D_DoomLoop (void)
 
     V_RestoreBuffer();
     R_ExecuteSetViewSize();
-
+    
+    printf("Tanguy6\n");
     D_StartGameLoop();
 
     if (testcontrols)
@@ -463,9 +472,9 @@ void D_DoomLoop (void)
 //
 //  DEMO LOOP
 //
-int             demosequence;
-int             pagetic;
-char                    *pagename;
+int             demosequence = 0;
+int             pagetic = 0;
+char            *pagename = 0;
 
 
 //
@@ -505,6 +514,7 @@ void D_AdvanceDemo (void)
 //
 void D_DoAdvanceDemo (void)
 {
+    puts("D_DoAdvanceDemo");
     players[consoleplayer].playerstate = PST_LIVE;  // not reborn
     advancedemo = false;
     usergame = false;               // no save / end game here
@@ -593,6 +603,7 @@ void D_DoAdvanceDemo (void)
 //
 void D_StartTitle (void)
 {
+    puts("D_StartTitle");
     gameaction = ga_nothing;
     demosequence = -1;
     D_AdvanceDemo ();
@@ -1777,6 +1788,7 @@ void D_DoomMain (void)
     DEH_printf("HU_Init: Setting up heads up display.\n");
     HU_Init ();
 
+    printf("Tanguy");
     DEH_printf("ST_Init: Init status bar.\n");
     ST_Init ();
 
@@ -1805,23 +1817,23 @@ void D_DoomMain (void)
 
     if (p)
     {
-		G_RecordDemo (myargv[p+1]);
+        G_RecordDemo (myargv[p+1]);
 		autostart = true;
     }
-
+    
     p = M_CheckParmWithArgs("-playdemo", 1);
     if (p)
     {
-		singledemo = true;              // quit after one demo
+        singledemo = true;              // quit after one demo
 		G_DeferedPlayDemo (demolumpname);
 		D_DoomLoop ();
         return;
     }
-
+    
     p = M_CheckParmWithArgs("-timedemo", 1);
     if (p)
     {
-		G_TimeDemo (demolumpname);
+        G_TimeDemo (demolumpname);
 		D_DoomLoop ();
         return;
     }
@@ -1834,11 +1846,11 @@ void D_DoomMain (void)
 
     if (gameaction != ga_loadgame )
     {
-		if (autostart || netgame)
+        if (autostart || netgame)
 			G_InitNew (startskill, startepisode, startmap);
 		else
 			D_StartTitle ();                // start up intro loop
-    }
+        }
 
     D_DoomLoop ();
 }

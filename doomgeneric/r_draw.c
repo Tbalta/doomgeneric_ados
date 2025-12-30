@@ -54,12 +54,12 @@
 //
 
 
-byte*		viewimage; 
-int		viewwidth;
-int		scaledviewwidth;
-int		viewheight;
-int		viewwindowx;
-int		viewwindowy; 
+byte*		viewimage = NULL; 
+int		viewwidth = 0;
+int		scaledviewwidth = 0;
+int		viewheight = 0;
+int		viewwindowx = 0;
+int		viewwindowy = 0; 
 byte*		ylookup[MAXHEIGHT]; 
 int		columnofs[MAXWIDTH]; 
 
@@ -79,7 +79,7 @@ static byte *background_buffer = NULL;
 // R_DrawColumn
 // Source is the top of the column to scale.
 //
-lighttable_t*		dc_colormap; 
+lighttable_t*		dc_colormap = NULL; 
 int			dc_x; 
 int			dc_yl; 
 int			dc_yh; 
