@@ -1593,7 +1593,7 @@ static void WI_loadUnloadData(load_callback_t callback)
 		    if (wbs->epsd != 1 || j != 8)
 		    {
 			// animations
-			DEH_snprintf(name, 9, "WIA%d%.2d%.2d", wbs->epsd, j, i);
+			DEH_snprintf(name, 9, "WIA%d%d%d%d%d", wbs->epsd, (j / 10) % 10, j % 10, (i / 10) % 10, i % 10 );
                         callback(name, &a->p[i]);
 		    }
 		    else

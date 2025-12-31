@@ -12,8 +12,7 @@
 #include <unistd.h>
 #include <keyboard.h>
 #include "vga.h"
-
-static bool videomode_set = false;
+#include <string.h>
 
 static volatile unsigned int s_ticks = 0;
 
@@ -32,7 +31,6 @@ int keyboard_fd = -1;
 int systick_fd = -1;
 
 void DG_Init() {
-	int result;
 
 	printf("Initializing AdOS\n");
 
@@ -57,13 +55,6 @@ void DG_Init() {
 	keyboard_fd = open("keyboard", 0);
 	if (systick_fd < 0)
 	 	I_Error("Failed to open keyboard");
-
-
-
-}
-
-
-static void back_to_text_mode(void) {
 }
 
 
@@ -71,10 +62,6 @@ void DG_DrawFrame()
 {
 
 	for (int line = 0; line < DOOMGENERIC_RESY; line++) {
-		// if (DG_ScreenBuffer[5 + (line * DOOMGENERIC_RESX)] != 0)
-		// {
-		// 	printf ("Found data: %d in FB\n", DG_ScreenBuffer[5]);
-		// }
 		memcpy(
 			(void *)((uintptr_t)(framebuffer) + (fbStride * line) + fbOffsetY + fbOffsetX),
 			(void *)(((uintptr_t)DG_ScreenBuffer) + (DOOMGENERIC_RESX * line)), DOOMGENERIC_RESX);
@@ -85,7 +72,6 @@ void DG_DrawFrame()
 		int i;
 
 		for (i = 0; i < 256; i++) {
-			// allegro uses VGA range 0..63
 			palette[i].red = colors[i].r >> 2;
 			palette[i].green = colors[i].g >> 2;
 			palette[i].blue = colors[i].b >> 2;
@@ -126,10 +112,48 @@ uint32_t DG_GetTicksMs()
 		I_Error ("Read error on systick_fd");
 	}
 
-	// printf ("Tanguy - tick %d\n", tick);
 	return tick;
 }
 
+unsigned char kbdus[128] =
+{
+    0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
+  '9', '0', '-', '=', '\b',	/* Backspace */
+  '\t',			/* Tab */
+  'q', 'w', 'e', 'r',	/* 19 */
+  't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',	/* Enter key */
+    0,			/* 29   - Control */
+  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',	/* 39 */
+ '\'', '`',   0,		/* Left shift */
+ '\\', 'z', 'x', 'c', 'v', 'b', 'n',			/* 49 */
+  'm', ',', '.', '/',   0,				/* Right shift */
+  '*',
+    0,	/* Alt */
+  ' ',	/* Space bar */
+    0,	/* Caps lock */
+    0,	/* 59 - F1 key ... > */
+    0,   0,   0,   0,   0,   0,   0,   0,
+    0,	/* < ... F10 */
+    0,	/* 69 - Num lock*/
+    0,	/* Scroll Lock */
+    0,	/* Home key */
+    0,	/* Up Arrow */
+    0,	/* Page Up */
+  '-',
+    0,	/* Left Arrow */
+    0,
+    0,	/* Right Arrow */
+  '+',
+    0,	/* 79 - End key*/
+    0,	/* Down Arrow */
+    0,	/* Page Down */
+    0,	/* Insert Key */
+    0,	/* Delete Key */
+    0,   0,   0,
+    0,	/* F11 Key */
+    0,	/* F12 Key */
+    0,	/* All other keys are undefined */
+};
 
 int DG_GetKey(int *pressed, unsigned char *doomKey)
 {
@@ -153,6 +177,10 @@ int DG_GetKey(int *pressed, unsigned char *doomKey)
 				break;
 			case ADOS_KEY_ALT:
 				*doomKey = KEY_LALT;
+				break;
+			case ADOS_KEY_RSHIFT:
+			case ADOS_KEY_LSHIFT:
+				*doomKey = KEY_RSHIFT;
 				break;
 		break;
 			// case :				
@@ -211,6 +239,9 @@ int DG_GetKey(int *pressed, unsigned char *doomKey)
 				break;
 			case ADOS_KEY_F12:
 				*doomKey = KEY_F12;
+				break;
+			default:
+				*doomKey = kbdus[scancode & 0x7F];
 				break;
 		}
 		*pressed = ! (scancode >> 7);

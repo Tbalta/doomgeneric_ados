@@ -195,7 +195,6 @@ void D_Display (void)
 		borderdrawcount = 3;
     }
 
-    // printf ("Tanguy gamestate - %d - tick %d - automapactive %d\n", gamestate, gametic, automapactive);
     // save the current screen if about to wipe
     if (gamestate != wipegamestate)
 		{
@@ -338,22 +337,16 @@ void D_BindVariables(void)
     int i;
 
     M_ApplyPlatformDefaults();
-    DEH_printf("tanguy3.\n");
     
     I_BindVideoVariables();
-    DEH_printf("tanguy7.\n");
     I_BindJoystickVariables();
-    DEH_printf("tanguy8.\n");
     I_BindSoundVariables();
     
-    DEH_printf("tanguy4.\n");
     M_BindBaseControls();
     M_BindWeaponControls();
     M_BindMapControls();
     M_BindMenuControls();
-    DEH_printf("tanguy5.\n");
     M_BindChatControls(MAXPLAYERS);
-    DEH_printf("tanguy6.\n");
 
     key_multi_msgplayer[0] = HUSTR_KEYGREEN;
     key_multi_msgplayer[1] = HUSTR_KEYINDIGO;
@@ -363,7 +356,6 @@ void D_BindVariables(void)
 #ifdef FEATURE_MULTIPLAYER
     NET_BindVariables();
 #endif
-    DEH_printf("tanguy.\n");
     M_BindVariable("mouse_sensitivity",      &mouseSensitivity);
     M_BindVariable("sfx_volume",             &sfxVolume);
     M_BindVariable("music_volume",           &musicVolume);
@@ -384,7 +376,6 @@ void D_BindVariables(void)
         M_snprintf(buf, sizeof(buf), "chatmacro%i", i);
         M_BindVariable(buf, &chat_macros[i]);
     }
-    DEH_printf("tanguy2.\n");
 
 }
 
@@ -456,7 +447,6 @@ void D_DoomLoop (void)
     V_RestoreBuffer();
     R_ExecuteSetViewSize();
     
-    printf("Tanguy6\n");
     D_StartGameLoop();
 
     if (testcontrols)
@@ -1788,7 +1778,6 @@ void D_DoomMain (void)
     DEH_printf("HU_Init: Setting up heads up display.\n");
     HU_Init ();
 
-    printf("Tanguy");
     DEH_printf("ST_Init: Init status bar.\n");
     ST_Init ();
 

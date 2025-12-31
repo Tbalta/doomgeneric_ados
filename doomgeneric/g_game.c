@@ -1951,7 +1951,6 @@ static void IncreaseDemoBuffer(void)
     // Free the old buffer and point the demo pointers at the new buffer.
     
     Z_Free(demobuffer);
-    printf("Tanguy - Demo buffer at: %d", demo_p);
 
     demobuffer = new_demobuffer;
     demo_p = new_demop;

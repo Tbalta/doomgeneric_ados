@@ -1172,9 +1172,7 @@ void ST_loadGraphics(void)
 void ST_loadData(void)
 {
     lu_palette = W_GetNumForName (DEH_String("PLAYPAL"));
-    printf("Tanguy2");
     ST_loadGraphics();
-    printf("Tanguy3");
 }
 
 static void ST_unloadCallback(char *lumpname, patch_t **variable)
