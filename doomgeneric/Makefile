@@ -12,15 +12,17 @@ else
 endif
 
 
-CC=i386-elf-gcc  # gcc or g++
+# CC=i386-elf-gcc  # gcc or g++
 CFLAGS+=-ggdb3 -Os
 LDFLAGS+=-Wl,--gc-sections -I../../libc -L ../../libc/
 CFLAGS+=-ggdb3 -Wall -DNORMALUNIX -DLINUX -DSNDSERV -D_DEFAULT_SOURCE -I../../libc -L ../../libc/ -l:libc.a
 CFLAGS+=-ffreestanding -O0 -nostdlib -fno-builtin -fno-zero-initialized-in-bss
 LIBS+=-l:libc.a
 CFLAGS+=-DDOOMGENERIC_RESX=320 -DDOOMGENERIC_RESY=200
-CFLAGS+=-DCMAP256
 
+ifneq ($(x86_64), TRUE)
+	CFLAGS+=-DCMAP256
+endif
 
 # subdirectory for objects
 OBJDIR=build

@@ -11,8 +11,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <keyboard.h>
-#include "vga.h"
 #include <string.h>
+#include <framebuffer.h>
+#include <vga.h>
 
 static volatile unsigned int s_ticks = 0;
 
@@ -30,31 +31,39 @@ int keyboard_fd = -1;
 // Systick
 int systick_fd = -1;
 
+
+framebuffer_information_t fb_info;
+
 void DG_Init() {
 
 	printf("Initializing AdOS\n");
 
-	fbWidth = DOOMGENERIC_RESX;
-	fbHeight = DOOMGENERIC_RESY;
-	fbStride = DOOMGENERIC_RESX;
-	fbBytesPerPixel = 1;
+	framebufferFD = open_framebuffer();
+	get_framebuffer_info(&fb_info);
+	if (framebufferFD < 0)
+		I_Error("Failed to open framebuffer");
+
+	fbWidth = fb_info.width;
+	fbHeight = fb_info.height;
+	fbStride = fb_info.pitch;
+	fbBytesPerPixel = fb_info.bpp / 8;
 	fbOffsetX = 0;
 	fbOffsetY = 0;
 
-	framebufferFD = set_vga_mode (320, 200, 256);
-	if (framebufferFD < 0)
-		I_Error("Failed to open framebuffer");
-	framebuffer = mmap(NULL, 320*200, 0, 0, framebufferFD, 0);
-	memset(framebuffer, 10, fbWidth * fbHeight);
+	framebuffer = mmap(NULL, fb_info.width * fb_info.height * (fb_info.bpp / 8), 0, 0, framebufferFD, 0);
+	memset(framebuffer, 10, fbStride * fbHeight);
 	
-	palette_fd = open ("palette", 0);
 	systick_fd = open("systick", 0);
 	if (systick_fd < 0)
 	 	I_Error("Failed to open systick");
 	
 	keyboard_fd = open("keyboard", 0);
-	if (systick_fd < 0)
+	if (keyboard_fd < 0)
 	 	I_Error("Failed to open keyboard");
+	
+	palette_fd = open("palette", 0);
+	if (palette_fd < 0)
+	 	I_Error("Failed to open palette");
 }
 
 
@@ -64,10 +73,10 @@ void DG_DrawFrame()
 	for (int line = 0; line < DOOMGENERIC_RESY; line++) {
 		memcpy(
 			(void *)((uintptr_t)(framebuffer) + (fbStride * line) + fbOffsetY + fbOffsetX),
-			(void *)(((uintptr_t)DG_ScreenBuffer) + (DOOMGENERIC_RESX * line)), DOOMGENERIC_RESX);
+			(void *)(((uintptr_t)DG_ScreenBuffer) + (DOOMGENERIC_RESX * line * fbBytesPerPixel)), DOOMGENERIC_RESX * fbBytesPerPixel);
 	}
 
-
+#if defined(__i386__)
 	if (palette_changed) {
 		int i;
 
@@ -80,6 +89,7 @@ void DG_DrawFrame()
 
 		palette_changed = false;
 	}
+#endif
 }
 
 
